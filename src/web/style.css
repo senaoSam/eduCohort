@@ -32,9 +32,15 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
 }
@@ -43,6 +49,9 @@ body {
   max-width: 68rem;
   margin: 0 auto;
   padding: 2rem 1.25rem 3rem;
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+  padding-bottom: max(3rem, env(safe-area-inset-bottom));
 }
 
 /* 左：請輸入生日；右：推算結果（窄螢幕改上下） */
@@ -292,6 +301,13 @@ button.primary:hover {
   }
 }
 
+/* 直式輔助：僅在窄螢幕顯示（見下方 @media 767px） */
+.route-portrait-heading,
+.route-portrait-subheading,
+.route-portrait-connector {
+  display: none;
+}
+
 /* 線框圖：左共通卡｜中分叉線｜右樹狀路徑 */
 .route-flow {
   display: grid;
@@ -492,11 +508,11 @@ button.primary:hover {
   height: 100%;
 }
 
-.route-cluster-inner > .route-leaf-row:nth-child(3) {
+.route-cluster-inner > .route-leaf-row:nth-child(4) {
   grid-row: 1;
 }
 
-.route-cluster-inner > .route-leaf-row:nth-child(4) {
+.route-cluster-inner > .route-leaf-row:nth-child(5) {
   grid-row: 2;
 }
 
@@ -553,10 +569,168 @@ button.primary:hover {
   }
 }
 
-@media (max-width: 680px) {
+/* 窄螢幕／手機：版面、觸控目標、路線圖直向堆疊 */
+@media (max-width: 767px) {
+  body {
+    overflow-x: clip;
+  }
+
+  .page {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1.75rem, env(safe-area-inset-bottom));
+  }
+
+  h1 {
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .card {
+    padding: 1rem 1rem;
+    border-radius: 10px;
+  }
+
+  .workspace-split {
+    gap: 1rem;
+  }
+
+  .form-grid {
+    gap: 0.85rem;
+  }
+
+  .row-actions {
+    margin-top: 0.5rem;
+  }
+
+  button.primary {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input.input-birth-main,
+  input[type="text"] {
+    font-size: 1rem;
+    min-height: 48px;
+    padding: 0.65rem 0.75rem;
+  }
+
+  select.field-select {
+    font-size: 1rem;
+    min-height: 48px;
+    padding: 0.65rem 0.75rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .field-select-label {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  label.field .field-hint {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .error {
+    font-size: 0.875rem;
+  }
+
+  .workspace-results {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .route-chart-card {
+    border-radius: 10px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    overflow-y: visible;
+    position: relative;
+    padding-left: 1.45rem;
+  }
+
+  /* 左側直向時間軸 */
+  .route-chart-card::after {
+    content: "";
+    position: absolute;
+    left: 0.45rem;
+    top: 0.65rem;
+    bottom: 0.65rem;
+    width: 3px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--accent), #6366f1 48%, #a855f7);
+    opacity: 0.42;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .route-flow,
+  .route-flow-common,
+  .route-flow-tree {
+    position: relative;
+    z-index: 1;
+  }
+
+  .route-portrait-connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1.35rem;
+    margin: -0.2rem 0 0.15rem;
+    color: color-mix(in oklch, var(--accent) 65%, var(--muted));
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .route-portrait-connector::after {
+    content: "▾";
+  }
+
+  .route-portrait-heading {
+    display: block;
+    margin: 0 0 0.55rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--muted) 25%, var(--border));
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+
+  .route-cluster--five > .route-portrait-heading {
+    margin-top: 0.25rem;
+  }
+
+  .route-portrait-subheading {
+    display: block;
+    margin: 0.15rem 0 0.4rem;
+    font-size: 0.67rem;
+    font-weight: 650;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .route-flow,
+  .route-flow-tree,
+  .route-cluster--three,
+  .route-cluster--five {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .route-flow {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 0 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
     min-height: unset;
     row-gap: 0.75rem;
   }
@@ -566,7 +740,12 @@ button.primary:hover {
   }
 
   .route-flow-common {
-    justify-content: center;
+    justify-content: stretch;
+  }
+
+  .route-flow-common-card {
+    max-width: none;
+    width: 100%;
   }
 
   .route-flow-tree {
@@ -583,28 +762,36 @@ button.primary:hover {
     grid-column: 1;
     grid-row: auto;
     max-width: none;
-    justify-self: center;
+    width: 100%;
+    justify-self: stretch;
   }
 
   .route-flow-fork--nested {
     display: none;
   }
 
-  .route-cluster-inner > .route-leaf-row:nth-child(3),
-  .route-cluster-inner > .route-leaf-row:nth-child(4) {
+  .route-cluster-inner > .route-leaf-row:nth-child(4),
+  .route-cluster-inner > .route-leaf-row:nth-child(5) {
     grid-row: auto;
   }
 
   .route-cluster--three,
   .route-cluster--five {
-    padding-left: 0.65rem;
-    padding-right: 0.65rem;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  /* 覆寫 JS inline 的雙欄，改直向堆疊避免窄屏破版 */
+  .route-cluster--five .route-track-bar {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto;
+    gap: 8px;
   }
 
   .route-leaf-row {
     grid-column: 1;
     grid-template-columns: 1fr;
-    gap: 0.45rem;
+    gap: 0.55rem;
     padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--border);
   }
@@ -616,7 +803,7 @@ button.primary:hover {
 
   .route-flow-row {
     grid-template-columns: 1fr;
-    gap: 0.45rem;
+    gap: 0.55rem;
     padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--border);
   }
@@ -624,6 +811,39 @@ button.primary:hover {
   .route-cluster--five .route-flow-row {
     border-bottom: none;
     padding-bottom: 0;
+  }
+
+  .route-track-bar {
+    grid-auto-rows: auto;
+    min-width: 0;
+  }
+
+  .route-track-grad {
+    font-size: 0.78rem;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .route-seg {
+    height: auto;
+    min-height: 4.75rem;
+    overflow: visible;
+    padding: 0.5rem 0.35rem;
+  }
+
+  .route-seg strong {
+    font-size: 0.72rem;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .route-seg-year {
+    font-size: 0.65rem;
+    word-break: break-word;
+  }
+
+  .route-seg-meta {
+    font-size: 0.6rem;
   }
 }
 
