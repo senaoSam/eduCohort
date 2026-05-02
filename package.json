@@ -1,0 +1,21 @@
+{
+  "name": "edu-cohort",
+  "version": "1.0.0",
+  "description": "依出生年月日推算台灣學制各階段約略入學年",
+  "type": "module",
+  "bin": {
+    "edu-cohort": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "vite build && vite preview --host",
+    "cli": "node src/cli.js",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
