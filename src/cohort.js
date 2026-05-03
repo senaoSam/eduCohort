@@ -224,16 +224,17 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
 
   /** 大一／四技一年級起算之西元 9 月年（含高中畢業後空檔／重考、大學重考延後入學） */
   const uniOrFourTechY1 = addYears(seniorTrack, 3) + adj.postSeniorGap + adj.uniEntryGap;
-  /** 高職銜接四技二年級入學之西元 9 月年（與高中職畢業同年 9 月） */
-  const vocFourTechY2 = uniOrFourTechY1;
   /** 五專後二技一年級（含二技重考延後入學） */
   const twoTechY1 = addYears(seniorTrack, 5) + adj.twoTechEntryGap;
 
   const uniGradJune = uniOrFourTechY1 + 4 + adj.uniGradExtra;
   const fourTechGradJune = uniGradJune;
-  const vocBridgeGradJune = vocFourTechY2 + 3 + adj.uniGradExtra;
 
   const twoTechGradJune = twoTechY1 + 2;
+
+  /** 學士畢業（6 月）後同年 9 月入碩一；二年制至碩士畢業 */
+  const masterYear1Sept = uniGradJune;
+  const masterGradJune = masterYear1Sept + 2;
 
   return {
     birth: formatLocalYMD(birth),
@@ -288,15 +289,13 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
       },
     },
 
-    /** 高職 → 四技二年級銜接（再讀三年至學士畢業） */
-    fourYearTechFromVocational: {
-      note: "四技管道多元（申請入學、統測分發、技優甄審等），以下為「高職畢業後同年 9 月入四技二年級」之常見銜接；修業仍以取得學士為準。",
-      techYear2Entry: enrollSept(vocFourTechY2),
-      techYear3: enrollSept(addYears(vocFourTechY2, 1)),
-      techYear4: enrollSept(addYears(vocFourTechY2, 2)),
-      graduation: {
-        approximateWesternJuneYear: vocBridgeGradJune,
-        label: labelJuneGraduation(vocBridgeGradJune, "四技學士"),
+    /** 大學／四技學士畢業後同年 9 月入學，二年制碩士至畢業（大學與四技四年制本模型畢業年相同） */
+    masterAfterBachelor: {
+      masterYear1: enrollSept(masterYear1Sept),
+      masterYear2: enrollSept(addYears(masterYear1Sept, 1)),
+      masterGraduation: {
+        approximateWesternJuneYear: masterGradJune,
+        label: labelJuneGraduation(masterGradJune, "碩士"),
       },
     },
 

@@ -19,7 +19,7 @@ export function renderCohortList(container, data) {
   const j = data.juniorHighGrade1.westernSeptYear;
   const senior = data.afterJuniorHigh.seniorHighGrade1.westernSeptYear;
   const u = data.universityFromSeniorHigh;
-  const voc = data.fourYearTechFromVocational;
+  const m = data.masterAfterBachelor;
   const tt = data.twoYearTechFromFiveYearCollege;
 
   const card = document.createElement("div");
@@ -57,20 +57,13 @@ export function renderCohortList(container, data) {
   ]);
 
   addSection("普高銜接（擇一）", [
-    rowLine("大學（學士）", u.universityYear1.westernSeptYear, u.universityGraduation.approximateWesternJuneYear),
+    rowLine("大學", u.universityYear1.westernSeptYear, u.universityGraduation.approximateWesternJuneYear),
     rowLine(
-      "四技（四年制）",
+      "四技",
       u.fourTechYear1FromSeniorHigh.westernSeptYear,
       u.fourTechGraduationFromSeniorHigh.approximateWesternJuneYear,
     ),
-  ]);
-
-  addSection("高職銜接四技", [
-    rowLine(
-      "四技（二年級起）",
-      voc.techYear2Entry.westernSeptYear,
-      voc.graduation.approximateWesternJuneYear,
-    ),
+    rowLine("碩士", m.masterYear1.westernSeptYear, m.masterGraduation.approximateWesternJuneYear),
   ]);
 
   addSection("五專 · 二技", [
