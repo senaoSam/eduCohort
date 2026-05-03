@@ -1,5 +1,5 @@
 import { computeCohort, parseBirthInput } from "../cohort.js";
-import { renderRouteChart } from "./route-chart.js";
+import { renderCohortList } from "./route-list.js";
 import "./style.css";
 
 function textEl(tag, className, text) {
@@ -20,7 +20,7 @@ function addYearPairOptions(sel, delayPrefix, retakePrefix, delayLabel, retakeLa
 
 function renderResults(container, data) {
   container.replaceChildren();
-  renderRouteChart(container, data);
+  renderCohortList(container, data);
 }
 
 function mount() {
