@@ -81,7 +81,7 @@ function mount() {
     sel.appendChild(new Option("年頭讀", "head"));
   });
 
-  const highSchoolSel = mkSelectRow("adj-highSchool", "高中延畢／重考（銜接大學／四技）", (sel) => {
+  const highSchoolSel = mkSelectRow("adj-highSchool", "高中延畢／重考（延畢只延畢業；重考入學與畢業皆延）", (sel) => {
     addYearPairOptions(sel, "delay", "retake", "高中延畢", "重考");
   });
 
@@ -89,7 +89,7 @@ function mount() {
     addYearPairOptions(sel, "delay", "retake", "大學／四技延畢", "重考");
   });
 
-  const fiveTwoSel = mkSelectRow("adj-fiveTwo", "五專／二技延畢／重考", (sel) => {
+  const fiveTwoSel = mkSelectRow("adj-fiveTwo", "五專／二技（延畢＝五專多讀；重考＝五專畢業後晚入二技）", (sel) => {
     addYearPairOptions(sel, "delay", "retake", "五專／二技延畢", "重考");
   });
 

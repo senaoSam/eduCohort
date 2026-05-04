@@ -18,6 +18,8 @@ export function renderCohortList(container, data) {
   const e = data.elementaryGrade1.westernSeptYear;
   const j = data.juniorHighGrade1.westernSeptYear;
   const senior = data.afterJuniorHigh.seniorHighGrade1.westernSeptYear;
+  const seniorHighGrad = data.afterJuniorHigh.seniorHighGraduation.approximateWesternJuneYear;
+  const fiveJuniorStart = data.afterJuniorHigh.fiveYearJuniorCollegeGrade1.westernSeptYear;
   const u = data.universityFromSeniorHigh;
   const m = data.masterAfterBachelor;
   const tt = data.twoYearTechFromFiveYearCollege;
@@ -59,7 +61,7 @@ export function renderCohortList(container, data) {
   addSection("國中小", [
     rowLine("國小", e, e + 6),
     rowLine("國中", j, j + 3),
-    rowLine("高中(職)", senior, senior + 3),
+    rowLine("高中(職)", senior, seniorHighGrad),
   ]);
 
   addSection("普高銜接（擇一）", [
@@ -73,7 +75,7 @@ export function renderCohortList(container, data) {
   ]);
 
   addSection("五專 · 二技", [
-    rowLine("五專", senior, senior + 5),
+    rowLine("五專", fiveJuniorStart, tt.fiveYearGraduation.approximateWesternJuneYear),
     rowLine("二技", tt.twoTechYear1.westernSeptYear, tt.twoTechGraduation.approximateWesternJuneYear),
   ]);
 

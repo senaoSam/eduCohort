@@ -83,10 +83,12 @@ function addYears(startSeptWesternYear, delta) {
  * @returns {{
  *   elementaryDelta: number;
  *   elementaryReadGap: number; // 0 年尾讀；−1 年頭讀
- *   postSeniorGap: number;
+ *   postSeniorEntryGap: number;
+ *   postSeniorGradExtra: number;
  *   uniGradExtra: number;
  *   uniEntryGap: number;
- *   twoTechEntryGap: number;
+ *   fiveYearGradExtra: number;
+ *   twoTechGapAfterFive: number;
  * }}
  */
 export function parseCohortAdjustments(raw = {}) {
@@ -105,9 +107,11 @@ export function parseCohortAdjustments(raw = {}) {
   const elementaryReadGap = elementaryRead === "head" ? -1 : 0;
 
   const highSchool = String(raw.highSchool ?? "0");
-  let postSeniorGap = 0;
-  if (highSchool.startsWith("delay-")) postSeniorGap = num(highSchool.slice(6));
-  else if (highSchool.startsWith("retake-")) postSeniorGap = num(highSchool.slice(7));
+  /** 延畢：高一入學不變，僅高三畢業（6 月）延後；重考：高一 9 月與畢業 6 月一併延後 n 年 */
+  let postSeniorEntryGap = 0;
+  let postSeniorGradExtra = 0;
+  if (highSchool.startsWith("delay-")) postSeniorGradExtra = num(highSchool.slice(6));
+  else if (highSchool.startsWith("retake-")) postSeniorEntryGap = num(highSchool.slice(7));
 
   const uniFour = String(raw.uniFour ?? "0");
   let uniGradExtra = 0;
@@ -116,18 +120,21 @@ export function parseCohortAdjustments(raw = {}) {
   else if (uniFour.startsWith("retake-")) uniEntryGap = num(uniFour.slice(7));
 
   const fiveTwo = String(raw.fiveTwo ?? "0");
-  /** 延畢／重考皆視為晚 n 年才進入二技（五專結束後空檔或五專延長） */
-  let twoTechEntryGap = 0;
-  if (fiveTwo.startsWith("delay-")) twoTechEntryGap = num(fiveTwo.slice(6));
-  else if (fiveTwo.startsWith("retake-")) twoTechEntryGap = num(fiveTwo.slice(7));
+  /** 五專延畢：五專畢業（6 月）再延 n 年；二技重考／空檔：五專正常畢業後晚 n 年才入二技 */
+  let fiveYearGradExtra = 0;
+  let twoTechGapAfterFive = 0;
+  if (fiveTwo.startsWith("delay-")) fiveYearGradExtra = num(fiveTwo.slice(6));
+  else if (fiveTwo.startsWith("retake-")) twoTechGapAfterFive = num(fiveTwo.slice(7));
 
   return {
     elementaryDelta,
     elementaryReadGap,
-    postSeniorGap,
+    postSeniorEntryGap,
+    postSeniorGradExtra,
     uniGradExtra,
     uniEntryGap,
-    twoTechEntryGap,
+    fiveYearGradExtra,
+    twoTechGapAfterFive,
   };
 }
 
@@ -231,10 +238,17 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
     label: labelSeptEnrollment(septY),
   });
 
-  /** 大一／四技一年級起算之西元 9 月年（含高中畢業後空檔／重考、大學重考延後入學） */
-  const uniOrFourTechY1 = addYears(seniorTrack, 3) + adj.postSeniorGap + adj.uniEntryGap;
-  /** 五專後二技一年級（含二技重考延後入學） */
-  const twoTechY1 = addYears(seniorTrack, 5) + adj.twoTechEntryGap;
+  /** 高中／高職：高一 9 月入學年（重考會延後；延畢不延後入學） */
+  const seniorHighEntrySept = seniorTrack + adj.postSeniorEntryGap;
+  /** 高三約 6 月畢業（延畢在三年制上多加 n；重考已反映在入學年上再加三年） */
+  const seniorHighGradJune = seniorHighEntrySept + 3 + adj.postSeniorGradExtra;
+
+  /** 大一／四技一年級 9 月（高三畢業同年 9 月＋大學重考空檔） */
+  const uniOrFourTechY1 = seniorHighGradJune + adj.uniEntryGap;
+
+  /** 五專畢業 6 月、二技一年級 9 月（五專延畢延長修業；重考／空檔僅推遲二技入學） */
+  const fiveYearGradJune = seniorTrack + 5 + adj.fiveYearGradExtra;
+  const twoTechY1 = fiveYearGradJune + adj.twoTechGapAfterFive;
 
   const uniGradJune = uniOrFourTechY1 + 4 + adj.uniGradExtra;
   const fourTechGradJune = uniGradJune;
@@ -263,14 +277,19 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
     /** 國中畢業後主流路徑（同一屆） */
     afterJuniorHigh: {
       seniorHighGrade1: {
-        westernSeptYear: seniorTrack,
-        rocAcademicYear: roc(seniorTrack),
-        label: labelSeptEnrollment(seniorTrack),
+        westernSeptYear: seniorHighEntrySept,
+        rocAcademicYear: roc(seniorHighEntrySept),
+        label: labelSeptEnrollment(seniorHighEntrySept),
+      },
+      /** 高中／高職三年制畢業約 6 月（含高中延畢／重考） */
+      seniorHighGraduation: {
+        approximateWesternJuneYear: seniorHighGradJune,
+        label: labelJuneGraduation(seniorHighGradJune, "高中職"),
       },
       vocationalHighGrade1: {
-        westernSeptYear: seniorTrack,
-        rocAcademicYear: roc(seniorTrack),
-        label: labelSeptEnrollment(seniorTrack),
+        westernSeptYear: seniorHighEntrySept,
+        rocAcademicYear: roc(seniorHighEntrySept),
+        label: labelSeptEnrollment(seniorHighEntrySept),
       },
       fiveYearJuniorCollegeGrade1: {
         westernSeptYear: seniorTrack,
@@ -309,9 +328,13 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
       },
     },
 
-    /** 五專 5 年，畢業後二技（2 年制）至二技畢業 */
+    /** 五專 5 年（可延畢），畢業後二技（2 年制）至二技畢業 */
     twoYearTechFromFiveYearCollege: {
-      fiveYearEndsWesternSeptYear: addYears(seniorTrack, 5),
+      fiveYearGraduation: {
+        approximateWesternJuneYear: fiveYearGradJune,
+        label: labelJuneGraduation(fiveYearGradJune, "五專"),
+      },
+      fiveYearEndsWesternSeptYear: addYears(seniorTrack, 5 + adj.fiveYearGradExtra),
       twoTechYear1: enrollSept(twoTechY1),
       twoTechYear2: enrollSept(addYears(twoTechY1, 1)),
       twoTechGraduation: {
