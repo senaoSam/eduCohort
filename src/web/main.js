@@ -77,8 +77,8 @@ function mount() {
   });
 
   const elementaryReadSel = mkSelectRow("adj-elementary-read", "年頭讀／年尾讀", (sel) => {
-    sel.appendChild(new Option("年頭讀（小一依齡內基準）", "head"));
-    sel.appendChild(new Option("年尾讀（小一再延後 1 年）", "tail"));
+    sel.appendChild(new Option("年尾讀", "tail"));
+    sel.appendChild(new Option("年頭讀", "head"));
   });
 
   const highSchoolSel = mkSelectRow("adj-highSchool", "高中延畢／重考（銜接大學／四技）", (sel) => {

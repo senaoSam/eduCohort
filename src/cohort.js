@@ -3,7 +3,7 @@
  * - 每學年度以 9/1 開學日為基準（與「滿幾歲入學」慣用算法一致）
  * - 國小一年級：開學日當天滿 6 歲（含）以上者入學該學年度小一
  * - 國小 6 年、國中 3 年；高中／高職／五專皆為國中畢業後銜接（同一屆）
- * - 年頭讀／年尾讀：使用者選項；年尾讀＝小一入學年刻意再延後 1 年（與早讀／晚讀可疊加）
+ * - 年頭讀／年尾讀：年尾讀＝齡內基準；年頭讀＝小一入學年 −1（與早讀／晚讀可疊加）
  */
 
 /**
@@ -82,7 +82,7 @@ function addYears(startSeptWesternYear, delta) {
  * @param {CohortAdjustmentForm} raw
  * @returns {{
  *   elementaryDelta: number;
- *   elementaryReadGap: number;
+ *   elementaryReadGap: number; // 0 年尾讀；−1 年頭讀
  *   postSeniorGap: number;
  *   uniGradExtra: number;
  *   uniEntryGap: number;
@@ -100,9 +100,9 @@ export function parseCohortAdjustments(raw = {}) {
   if (elementary.startsWith("early-")) elementaryDelta = -num(elementary.slice(6));
   else if (elementary.startsWith("late-")) elementaryDelta = num(elementary.slice(5));
 
-  /** 年尾讀：小一入學年再延後 1 年（西元 9 月入學年 +1） */
-  const elementaryRead = String(raw.elementaryRead ?? "head");
-  const elementaryReadGap = elementaryRead === "tail" ? 1 : 0;
+  /** 年尾讀：齡內基準（+0）；年頭讀：小一 9 月入學年 −1 */
+  const elementaryRead = String(raw.elementaryRead ?? "tail");
+  const elementaryReadGap = elementaryRead === "head" ? -1 : 0;
 
   const highSchool = String(raw.highSchool ?? "0");
   let postSeniorGap = 0;
@@ -247,7 +247,7 @@ export function computeCohort(birth, referenceDate = new Date(), adjustments = {
 
   return {
     birth: formatLocalYMD(birth),
-    elementaryReadMode: adj.elementaryReadGap === 1 ? "年尾讀" : "年頭讀",
+    elementaryReadMode: adj.elementaryReadGap === -1 ? "年頭讀" : "年尾讀",
 
     elementaryGrade1: {
       westernSeptYear: e1,

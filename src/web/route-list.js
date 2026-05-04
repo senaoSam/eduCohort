@@ -33,9 +33,7 @@ export function renderCohortList(container, data) {
   const readNote = document.createElement("p");
   readNote.className = "cohort-list-read-mode";
   readNote.textContent =
-    data.elementaryReadMode === "年尾讀"
-      ? "已套用年尾讀：小一入學年（西元 9 月）比齡內基準再多延後 1 年，後續學制一併順延；與「早讀／晚讀」可疊加。"
-      : "已套用年頭讀：小一入學年以齡內基準為準（僅受「早讀／晚讀」調整）。";
+    data.elementaryReadMode === "年頭讀" ? "已套用：年頭讀。" : "已套用：年尾讀。";
   card.appendChild(readNote);
 
   /** @param {string} heading @param {string[]} lines */
