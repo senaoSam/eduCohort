@@ -302,6 +302,17 @@ button.primary:hover {
   line-height: 1.45;
 }
 
+.cohort-list-read-mode {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin: -0.35rem 0 1rem;
+  padding: 0.65rem 0.75rem;
+  line-height: 1.5;
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklch, var(--accent) 12%, var(--border));
+  background: color-mix(in oklch, var(--accent) 4%, var(--surface));
+}
+
 .cohort-list-section {
   margin-top: 1rem;
 }
